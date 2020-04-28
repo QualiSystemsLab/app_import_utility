@@ -79,5 +79,3 @@ def app_template(app_name, deploy_name, deploy_service_name, categories, app_att
     categories = categories_info(categories)
 
     return xml.format(AppResourceInfo=app_resource, Categories=categories if categories else "")
-
-# print app_template("testapp1", ["Cate1", "Cate2"], {"Password": "3M3u7nkDzxWb0aJ/IZYeWw==", "Public IP": "", "User": ""}, {"vCenter Image": "C:\Users\omri.a\Downddddddddddddddddddddddloads\photon-hw11-3.0-26156e2.ova1214"})
