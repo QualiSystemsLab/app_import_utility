@@ -72,16 +72,15 @@ class SaveAppUtility:
             app_attributes[attr.Name] = attr.Value
 
         app_categories = ['Applications']
-        deploy_attributes = self.deploy_info['deploypaths'][0]['attributes']
-        deploy_name = self.deploy_info['deploypaths'][0]['name']
-        deploy_service_name = self.deploy_info['deploypaths'][0]['service_name']
 
         if self.saved_app_info is not None:
-            for key, value in self.saved_app_info.iteritems():
-                deploy_attributes[key] = value
+            for deploy_path in self.deploy_info['deploypaths']:
+                if deploy_path['is_default']:
+                    for key, value in self.saved_app_info.iteritems():
+                        deploy_path['attributes'][key] = value
 
-        self.app_xml = app_template(self.new_app_name, deploy_name, deploy_service_name, app_categories, app_attributes,
-                                    resource.ResourceModelName, resource.DriverName, deploy_attributes,
+        self.app_xml = app_template(self.new_app_name, self.deploy_info['deploypaths'], app_categories, app_attributes,
+                                    resource.ResourceModelName, resource.DriverName,
                                     resource.VmDetails.CloudProviderFullName, self.display_image_name)
 
     def upload_app(self):
