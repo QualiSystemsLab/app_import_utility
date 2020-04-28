@@ -7,13 +7,17 @@ import shutil
 from images import vm_image
 
 
-def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, server, user="admin", password="admin", image_result=None, image_name='vm.png'):
+def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, server, user="admin", password="admin", display_image_result=None, display_image_name='vm.png'):
     """
+    :param CloudShellAPISession cs_api:
+    :param string reservation_id:
     :param string app_name:
     :param string app_xml_content:
     :param string server:
     :param string user:
     :param string password:
+    :param image display_image_result
+    :param string display_image_name
     :return:
     """
     metadata = """<?xml version="1.0" encoding="utf-8"?>
@@ -29,7 +33,7 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     app_template_file = "{}/{}".format(working_dir, app_name)
     blueprint_zip_file = "{}/Blueprint.zip".format(working_dir)
 
-    image_file = os.path.join(working_dir, image_name)
+    display_image_file = os.path.join(working_dir, display_image_name)
 
     metadata_file = "{}/metadata.xml".format(working_dir)
     with open(app_template_file, "w") as app_xml:
@@ -38,12 +42,12 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     if os.path.exists(blueprint_zip_file):
         os.remove(blueprint_zip_file)
 
-    if os.path.exists(image_file):
-        os.remove(image_file)
+    if os.path.exists(display_image_file):
+        os.remove(display_image_file)
 
-    fh = open(image_file, "wb")
-    if image_result is not None:
-        fh.write(image_result)
+    fh = open(display_image_file, "wb")
+    if display_image_result is not None:
+        fh.write(display_image_result)
     else:
         fh.write(vm_image.decode('base64'))
     fh.close()
@@ -51,7 +55,7 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     zip_file = zipfile.ZipFile(blueprint_zip_file, "w")
     zip_file.write(app_template_file, arcname="App Templates\\{}.xml".format(app_name))
 
-    zip_file.write(image_file, arcname="App Templates\\{}".format(image_name))
+    zip_file.write(display_image_file, arcname="App Templates\\{}".format(display_image_name))
 
     open(metadata_file, "w").write(metadata)
     zip_file.write(metadata_file, arcname="metadata.xml")
