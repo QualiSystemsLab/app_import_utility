@@ -9,6 +9,7 @@ def create_json_string(deployment_paths):
     for deploypath in deployment_paths:
         path = dict()
         path['name'] = deploypath.Name
+        path['is_default'] = deploypath.IsDefault
         path['service_name'] = deploypath.DeploymentService.Name
         path['attributes'] = dict()
         for attribute in deploypath.DeploymentService.Attributes:
