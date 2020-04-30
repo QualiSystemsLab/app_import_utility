@@ -1,6 +1,6 @@
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from cloudshell.workflow.orchestration.setup.default_setup_orchestrator import DefaultSetupWorkflow
-from cloudshell.helpers.apps.app_helper import save_app_deployment_info
+from cloudshell.helpers.apps.save_app_info_orch_helper import save_app_deployment_info
 
 
 sandbox = Sandbox()

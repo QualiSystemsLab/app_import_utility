@@ -1,6 +1,6 @@
 from cloudshell.workflow.orchestration.sandbox import Sandbox
 from cloudshell.helpers.scripts import cloudshell_scripts_helpers as helpers
-from cloudshell.helpers.apps.app_helper import AppHelper
+from cloudshell.helpers.apps.save_app_utility import SaveAppUtility
 
 import os
 import re
@@ -17,9 +17,9 @@ def save_app():
     else:
         app_name = resource.name
 
-    apphelper = AppHelper(sandbox, resource.name, app_name, connectivity.server_address, connectivity.admin_user,
-                          connectivity.admin_pass, image_url)
-    apphelper.save_flow()
+    apputility = SaveAppUtility(sandbox, resource.name, app_name, connectivity.server_address, connectivity.admin_user,
+                               connectivity.admin_pass, image_url)
+    apputility.save_flow()
 
 
 if __name__ == "__main__":
