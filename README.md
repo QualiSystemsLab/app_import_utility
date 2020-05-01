@@ -17,7 +17,7 @@ This repo contains a python package, CloudShell resource scripts and orchestrati
 ## Script's Functions
 
 * Setup Scripts
-    * AppSaveSetup
+    * **AppSaveSetup**
         * This setup script will save the App deployment information that is needed by the resource scripts to the SandboxData
         * It will still complete the other steps in the default setup
 
@@ -84,7 +84,7 @@ This repo contains a python package, CloudShell resource scripts and orchestrati
         * Attempts to run the hidden 'save_app' command. For OCI this will create a new image
         * Gather deployed app attributes
         * Create the App XML and upload
-    
+
     * save_flow_just_app
         * Will verify that deployment info for this app was saved to the Sandbox Data
         * Will verify that the DisplayImageURL can be resolved, uses default image if not
