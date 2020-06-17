@@ -2,25 +2,31 @@ import os
 import json
 import requests
 
-from build_app_xml import app_template
-from upload_app_xml import upload_app_to_cloudshell
+from cloudshell.helpers.app_import.build_app_xml import app_template
+from cloudshell.helpers.app_import.upload_app_xml import upload_app_to_cloudshell
 
 
 class SaveAppUtility:
-    def __init__(self, sandbox, resource_name, app_name, server_address, admin_user, admin_password, display_image_url='', new_app_name=''):
+    def __init__(self, sandbox, resource_name, server_address, admin_user, admin_password, display_image_url='', new_app_name=''):
         self.sandbox = sandbox
         self.resource_name = resource_name
-        self.app_name = app_name
+
+        for vm in self.sandbox.automation_api.GetReservationDetails(self.sandbox.id).ReservationDescription.Resources:
+            if vm.Name == self.resource_name:
+                self.app_name = vm.AppDetails.AppName
+                try:
+                    if new_app_name == '':
+                        self.new_app_name = vm.AppTemplateName
+                    else:
+                        self.new_app_name = new_app_name
+                except Exception as e:
+                    self.new_app_name = self.app_name
+
         self.server_address = server_address
         self.admin_user = admin_user
         self.admin_password = admin_password
         self.display_image_name = 'vm.png'
         self.display_image_url = display_image_url
-
-        if new_app_name == '':
-            self.new_app_name = app_name
-        else:
-            self.new_app_name = new_app_name
 
         self.display_image_result = None
         self.deploy_info = None
@@ -41,15 +47,19 @@ class SaveAppUtility:
                 break
 
     def get_display_image_from_url(self):
-        if self.display_image_url != '':
-            try:
+        try:
+            if self.display_image_url != '':
                 self.display_image_result = requests.get(self.display_image_url, allow_redirects=True).content
                 self.display_image_name = os.path.basename(self.display_image_url)
-            except Exception:
-                self.sandbox.automation_api.WriteMessageToReservationOutput(self.sandbox.id,
-                                                                            'Issue downloading from Display Image URL... Using Default Display Image.')
-                self.display_image_result = None
+            else:
+                self.display_image_result = self.sandbox.automation_api.GetReservationAppTemplateImage(self.sandbox.id,
+                                                                                                       self.resource_name).AppTemplateImage
                 self.display_image_name = 'vm.png'
+        except:
+            #self.sandbox.automation_api.WriteMessageToReservationOutput(self.sandbox.id,
+            #                                                            'Issue getting display image... Using default display image.')
+            self.display_image_result = None
+            self.display_image_name = 'vm.png'
 
     def save_app_info(self):
         command = [x.Name for x in self.sandbox.automation_api.GetResourceConnectedCommands(self.resource_name).Commands

@@ -23,7 +23,7 @@ def deployment_paths(deploy_paths, cloud_provider):
     xml = """
     {DeployPaths}
 """
-    return xml.format(DeployPaths="\n".join([attribute(x, cloud_provider) for x in deploy_paths]))
+    return xml.format(DeployPaths="\n".join([deployment_path(x, cloud_provider) for x in deploy_paths]))
 
 
 def app_resource(attributes, model, driver):
@@ -86,3 +86,4 @@ def app_template(app_name, deploy_paths, categories, app_attributes, model, driv
     categories = categories_info(categories)
 
     return xml.format(AppResourceInfo=app_resource, Categories=categories if categories else "")
+
