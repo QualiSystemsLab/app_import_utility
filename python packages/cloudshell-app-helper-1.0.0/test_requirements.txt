@@ -1,0 +1,10 @@
+nose
+coverage>=3.6,<5.0
+unittest2
+mock
+nose-exclude
+coveralls
+pyapi-gitlab
+pyfakefs
+
+cloudshell-automation-api>=8.3,<8.4
