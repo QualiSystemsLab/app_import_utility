@@ -19,6 +19,11 @@ This repo contains a python package, CloudShell resource scripts and orchestrati
 7. Reach out to Danny Yeager for any assistance if encountering errors.
 
 
+## Utility Usage
+
+* [Usage Guide](https://github.com/QualiSystemsLab/app_import_utility/blob/develop/.github/usage.md)
+
+
 ## Contributing
 
 * [Contributing](https://github.com/QualiSystemsLab/app_import_utility/blob/develop/.github/contributing.md)
