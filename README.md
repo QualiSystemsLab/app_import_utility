@@ -22,7 +22,7 @@ This repo contains a python package, CloudShell resource scripts and orchestrati
 ## Contributing
 
 * [Contributing](https://github.com/QualiSystemsLab/app_import_utility/blob/develop/.github/contributing.md)
-* [Creating Pull Requests]()
+* [Creating Pull Requests](https://github.com/QualiSystemsLab/app_import_utility/blob/develop/.github/pull_request_template.md)
 
 
 ## License
