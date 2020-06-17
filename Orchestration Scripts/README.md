@@ -15,10 +15,10 @@
             * The name of this new App Template will be the required input parameter 'NewAppName'
             * This will create a new OCI Image that the App is deploying
             * This will also overwrite any changes to the Deployed App's attributes
-    * **MockAppSave**
+    * **SaveAppAttributes**
         * This resource script will partially overwrite an existing App Template with the current state of the Deployed App
             * This will ONLY overwrite any changes to the Deployed App's attributes
-    * **MockAppSaveAs**
+    * **SaveAsAppAttributes**
         * This resource script will create a new App Template with the current state of the Deployed App
             * This will ONLY overwrite any changes to the Deployed App's attributes
             * Will copy over the same deployment path as the Deployed App
