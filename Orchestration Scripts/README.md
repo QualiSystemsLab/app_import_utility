@@ -8,12 +8,12 @@
 * Resource Scripts
     * **SaveAppTemplate**
         * This resource script will overwrite an existing App Template with the current state of the Deployed App
-            * This will create a new OCI Image that the App is deploying
+            * This will create a new VM Image that the App is deploying
             * This will also overwrite any changes to the Deployed App's attributes
     * **SaveAsAppTemplate**
         * This resource script will create a new App Template with the current state of the Deployed App
             * The name of this new App Template will be the required input parameter 'NewAppName'
-            * This will create a new OCI Image that the App is deploying
+            * This will create a new VM Image that the App is deploying
             * This will also overwrite any changes to the Deployed App's attributes
     * **SaveAppAttributes**
         * This resource script will partially overwrite an existing App Template with the current state of the Deployed App
