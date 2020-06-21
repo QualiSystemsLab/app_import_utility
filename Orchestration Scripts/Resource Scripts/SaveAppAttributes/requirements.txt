@@ -1,4 +1,4 @@
 cloudshell-orch-core>=1.7.0.0,<1.8.0.0
 cloudshell-automation-api>=9.3
-cloudshell-app-helper
-requests
+cloudshell-app-helper>=1.0.0,<2.0.0
+requests==2.23.0

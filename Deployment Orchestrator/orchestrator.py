@@ -7,6 +7,7 @@ from cloudshell.api.common_cloudshell_api import CloudShellAPIError
 from cloudshell.core.context.error_handling_context import ErrorHandlingContext
 from cloudshell.shell.core.session.cloudshell_session import CloudShellSessionContext
 from cloudshell.shell.core.session.logging_session import LoggingSessionContext
+from cloudshell.helpers.save_workflow.deploy_info import DeployInfo
 
 from auto_events import AutoEvents
 
@@ -40,19 +41,10 @@ class DeployAppOrchestrationDriver(object):
         session = self._get_cloudshell_api(context, logger)
 
         # Create Sandbox Data for App Save/Save As
-        sandbox_data = dict()
-        sandbox_data['deploypaths'] = []
+        app_resource_info = session.GetAppsDetailsInReservation(reservation_id, [app_name]).Apps[0]
 
-        path = dict()
-        path['name'] = deployment_service['cloudProviderName'] + ' - ' + deployment_service_name.split('.')[-1]
-        path['service_name'] = deployment_service_name
-        path['attributes'] = dict()
-        for attribute in deployment_attributes:
-            path['attributes'][attribute['name']] = attribute['value']
-        sandbox_data['deploypaths'].append(path)
-
-        sandbox_data_json = json.dumps(sandbox_data)
-        key_value = SandboxDataKeyValue(app_name, sandbox_data_json)
+        serialized_deployment_info = json.dumps(DeployInfo(app_resource_info.DeploymentPaths))
+        key_value = SandboxDataKeyValue(app_resource_info.Name, serialized_deployment_info)
         session.SetSandboxData(reservation_id, [key_value])
         # End Block for App Save/Save As
 
