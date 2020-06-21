@@ -7,20 +7,35 @@ from cloudshell.helpers.app_import.upload_app_xml import upload_app_to_cloudshel
 
 
 class SaveAppUtility:
-    def __init__(self, sandbox, resource_name, server_address, admin_user, admin_password, display_image_url='', new_app_name=''):
+    def __init__(self, sandbox, resource_name, server_address, admin_user, admin_password, display_image_url='', new_app_name='', save_as=False):
         self.sandbox = sandbox
         self.resource_name = resource_name
+        self.app_name = ''
+        self.AppTemplateName = ''
+        self.new_app_name = ''
+
+        self.api_missing = False
 
         for vm in self.sandbox.automation_api.GetReservationDetails(self.sandbox.id).ReservationDescription.Resources:
             if vm.Name == self.resource_name:
                 self.app_name = vm.AppDetails.AppName
                 try:
+                    self.AppTemplateName = vm.AppTemplateName
                     if new_app_name == '':
-                        self.new_app_name = vm.AppTemplateName
+                        if save_as:
+                            if self.app_name == self.AppTemplateName:
+                                self.api_missing = True
+                            else:
+                                self.new_app_name = self.app_name
+                        else:
+                            self.new_app_name = self.AppTemplateName
                     else:
                         self.new_app_name = new_app_name
                 except Exception as e:
                     self.new_app_name = self.app_name
+                if self.api_missing:
+                    raise Exception("Stopping Save As because App's name was not changed prior to deployment.\n"
+                                    "Use the 'NewAppName' custom attribute on the command to override.")
 
         self.server_address = server_address
         self.admin_user = admin_user
@@ -38,7 +53,7 @@ class SaveAppUtility:
         if self.deploy_info is None:
             raise Exception("Could not locate Sandbox information on {}, App must be deployed by Setup script to use this functionality.\n".format(self.resource_name))
 
-        self.get_display_image_from_url()
+        self.get_display_image()
 
     def get_deployment_info(self):
         for keyValue in self.sandbox.automation_api.GetSandboxData(self.sandbox.id).SandboxDataKeyValues:
@@ -46,20 +61,21 @@ class SaveAppUtility:
                 self.deploy_info = json.loads(keyValue.Value)
                 break
 
-    def get_display_image_from_url(self):
-        try:
-            if self.display_image_url != '':
-                self.display_image_result = requests.get(self.display_image_url, allow_redirects=True).content
-                self.display_image_name = os.path.basename(self.display_image_url)
-            else:
-                self.display_image_result = self.sandbox.automation_api.GetReservationAppTemplateImage(self.sandbox.id,
-                                                                                                       self.resource_name).AppTemplateImage
+    def get_display_image(self):
+        self.display_image_result = self.sandbox.automation_api.GetReservationAppImage(self.sandbox.id,
+                                                                                       self.resource_name).AppTemplateImage
+
+        if self.display_image_result == '':
+            try:
+                if self.display_image_url != '':
+                    self.display_image_result = requests.get(self.display_image_url, allow_redirects=True).content
+                    self.display_image_name = os.path.basename(self.display_image_url)
+                else:
+                    self.display_image_result = None
+                    self.display_image_name = 'vm.png'
+            except:
+                self.display_image_result = None
                 self.display_image_name = 'vm.png'
-        except:
-            #self.sandbox.automation_api.WriteMessageToReservationOutput(self.sandbox.id,
-            #                                                            'Issue getting display image... Using default display image.')
-            self.display_image_result = None
-            self.display_image_name = 'vm.png'
 
     def save_app_info(self):
         command = [x.Name for x in self.sandbox.automation_api.GetResourceConnectedCommands(self.resource_name).Commands
@@ -87,7 +103,11 @@ class SaveAppUtility:
             for deploy_path in self.deploy_info['deploypaths']:
                 if deploy_path['is_default']:
                     for key, value in self.saved_app_info.iteritems():
-                        deploy_path['attributes'][key] = value
+                        # patch for AWS
+                        if 'AWS' in key:
+                            deploy_path['attributes']['AWS AMI Id'] = value
+                        else:
+                            deploy_path['attributes'][key] = value
 
         self.app_xml = app_template(self.new_app_name, self.deploy_info['deploypaths'], app_categories, app_attributes,
                                     resource.ResourceModelName, resource.DriverName,
@@ -103,12 +123,14 @@ class SaveAppUtility:
             raise Exception("Error uploading App to CloudShell\n{}".format(result))
 
     def save_flow(self):
-        self.verify_deploy_info_and_display_image()
-        self.save_app_info()
-        self.create_app_xml()
-        self.upload_app()
+        if not self.api_missing:
+            self.verify_deploy_info_and_display_image()
+            self.save_app_info()
+            self.create_app_xml()
+            self.upload_app()
 
     def save_flow_just_app(self):
-        self.verify_deploy_info_and_display_image()
-        self.create_app_xml()
-        self.upload_app()
+        if not self.api_missing:
+            self.verify_deploy_info_and_display_image()
+            self.create_app_xml()
+            self.upload_app()

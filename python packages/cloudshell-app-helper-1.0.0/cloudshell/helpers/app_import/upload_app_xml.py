@@ -47,7 +47,7 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
 
     fh = open(display_image_file, "wb")
     if display_image_result is not None:
-        fh.write(display_image_result)
+        fh.write(display_image_result.decode('base64'))
     else:
         fh.write(vm_image.decode('base64'))
     fh.close()
@@ -68,6 +68,8 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     result = requests.post("http://{}:9000/API/Package/ImportPackage".format(server),
                            headers={"Authorization": "Basic {}".format(authentication_code[1:-1])},
                            files={"QualiPackage": zip_content})
+    if 'false' in result.content:
+        raise Exception('Issue importing App XML into Cloudshell: ' + result.content)
     if result.status_code >= 300:
         return result.content
     else:

@@ -13,7 +13,7 @@ def save_app():
     if 'NEWAPPNAME' in os.environ:
         new_app_name = os.environ['NEWAPPNAME']
     else:
-        raise Exception('Script Input: NewAppName, must not be empty.')
+        new_app_name = ''
 
     if 'DISPLAYIMAGEURL' in os.environ:
         image_url = os.environ['DISPLAYIMAGEURL']
@@ -21,7 +21,7 @@ def save_app():
         image_url = ''
 
     apputility = SaveAppUtility(sandbox, resource.name, connectivity.server_address, connectivity.admin_user,
-                                connectivity.admin_pass, image_url, new_app_name)
+                                connectivity.admin_pass, image_url, new_app_name, save_as=True)
     apputility.save_flow_just_app()
 
 
