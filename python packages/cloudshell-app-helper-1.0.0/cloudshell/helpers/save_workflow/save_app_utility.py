@@ -4,6 +4,7 @@ import requests
 
 from cloudshell.helpers.app_import.build_app_xml import app_template
 from cloudshell.helpers.app_import.upload_app_xml import upload_app_to_cloudshell
+from cloudshell.api.cloudshell_api import InputNameValue
 
 
 class SaveAppUtility:
@@ -77,16 +78,20 @@ class SaveAppUtility:
                 self.display_image_result = None
                 self.display_image_name = 'vm.png'
 
-    def save_app_info(self):
+    def save_app_info(self, delete):
         command = [x.Name for x in self.sandbox.automation_api.GetResourceConnectedCommands(self.resource_name).Commands
-                   if x.Name == 'save_app']
+                   if x.Name == 'create_app_image']
 
         if len(command) == 1:
+            if delete:
+                inputs = [InputNameValue(name='delete_old_image', 'True')]
+            else:
+                inputs = [InputNameValue(name='delete_old_image', 'False')]
             self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
                                                                                                          self.resource_name,
-                                                                                                         'save_app',
+                                                                                                         'create_app_image',
                                                                                                          'connectivity',
-                                                                                                         []).Output)
+                                                                                                         inputs).Output)
         else:
             raise Exception("Operation not supported by Cloud Provider\n")
 
@@ -122,10 +127,10 @@ class SaveAppUtility:
         else:
             raise Exception("Error uploading App to CloudShell\n{}".format(result))
 
-    def save_flow(self):
+    def save_flow(self, delete=False):
         if not self.api_missing:
             self.verify_deploy_info_and_display_image()
-            self.save_app_info()
+            self.save_app_info(delete)
             self.create_app_xml()
             self.upload_app()
 
