@@ -84,9 +84,9 @@ class SaveAppUtility:
 
         if len(command) == 1:
             if delete:
-                inputs = [InputNameValue(name='delete_old_image', 'True')]
+                inputs = [InputNameValue(name='delete_old_image', value='True')]
             else:
-                inputs = [InputNameValue(name='delete_old_image', 'False')]
+                inputs = [InputNameValue(name='delete_old_image', value='False')]
             self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
                                                                                                          self.resource_name,
                                                                                                          'create_app_image',
@@ -133,9 +133,13 @@ class SaveAppUtility:
             self.save_app_info(delete)
             self.create_app_xml()
             self.upload_app()
+            if delete:
+                self.sandbox.automation_api.RefreshAppInBlueprints(self.AppTemplateName)
 
-    def save_flow_just_app(self):
+    def save_flow_just_app(self, update=False):
         if not self.api_missing:
             self.verify_deploy_info_and_display_image()
             self.create_app_xml()
             self.upload_app()
+            if update:
+                self.sandbox.automation_api.RefreshAppInBlueprints(self.AppTemplateName)
