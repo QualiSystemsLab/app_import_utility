@@ -84,9 +84,9 @@ class SaveAppUtility:
 
         if len(command) == 1:
             if delete:
-                inputs = [InputNameValue(name='delete_old_image', value='True')]
+                inputs = [InputNameValue(Name='delete_old_image', Value='True')]
             else:
-                inputs = [InputNameValue(name='delete_old_image', value='False')]
+                inputs = [InputNameValue(Name='delete_old_image', Value='False')]
             self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
                                                                                                          self.resource_name,
                                                                                                          'create_app_image',
