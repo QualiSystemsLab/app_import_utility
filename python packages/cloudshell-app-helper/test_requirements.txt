@@ -6,5 +6,4 @@ nose-exclude
 coveralls
 pyapi-gitlab
 pyfakefs
-
-cloudshell-automation-api>=8.3,<8.4
+cloudshell-automation-api>=2020.2.0.0
