@@ -1,3 +1,2 @@
-cloudshell-orch-core>=3.3.0.0,<3.4.0.0
 cloudshell-automation-api>=2020.2.0.0
 requests==2.23.0
