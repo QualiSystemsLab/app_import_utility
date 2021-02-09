@@ -84,9 +84,11 @@ class SaveAppUtility:
 
         if len(command) == 1:
             if delete:
-                inputs = [InputNameValue(name='delete_old_image', value='True')]
+                inputs = [InputNameValue(name='delete_old_image', value='True'),
+                          InputNameValue(name='app_template_name', value=self.AppTemplateName)]
             else:
-                inputs = [InputNameValue(name='delete_old_image', value='False')]
+                inputs = [InputNameValue(name='delete_old_image', value='False'),
+                          InputNameValue(name='app_template_name', value=self.AppTemplateName)]
             self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
                                                                                                          self.resource_name,
                                                                                                          'create_app_image',
@@ -99,12 +101,14 @@ class SaveAppUtility:
         command = [x.Name for x in self.sandbox.automation_api.GetResourceConnectedCommands(self.resource_name).Commands
                    if x.Name == 'revert_app_image']
 
+        inputs = [InputNameValue(name='app_template_name', value=self.AppTemplateName)]
+
         if len(command) == 1:
             self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
                                                                                                          self.resource_name,
                                                                                                          'revert_app_image',
                                                                                                          'connectivity',
-                                                                                                         []).Output)
+                                                                                                         inputs).Output)
         else:
             raise Exception("Operation not supported by Cloud Provider\n")
 
