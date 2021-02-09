@@ -95,6 +95,19 @@ class SaveAppUtility:
         else:
             raise Exception("Operation not supported by Cloud Provider\n")
 
+    def revert_app_info(self):
+        command = [x.Name for x in self.sandbox.automation_api.GetResourceConnectedCommands(self.resource_name).Commands
+                   if x.Name == 'revert_app_image']
+
+        if len(command) == 1:
+            self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
+                                                                                                         self.resource_name,
+                                                                                                         'revert_app_image',
+                                                                                                         'connectivity',
+                                                                                                         []).Output)
+        else:
+            raise Exception("Operation not supported by Cloud Provider\n")
+
     def create_app_xml(self):
         resource = self.sandbox.automation_api.GetResourceDetails(self.resource_name)
 
@@ -143,3 +156,11 @@ class SaveAppUtility:
             self.upload_app()
             if update:
                 self.sandbox.automation_api.RefreshAppInBlueprints(self.AppTemplateName)
+
+    def revert_flow(self):
+        if not self.api_missing:
+            self.verify_deploy_info_and_display_image()
+            self.revert_app_info()
+            self.create_app_xml()
+            self.upload_app()
+            self.sandbox.automation_api.RefreshAppInBlueprints(self.AppTemplateName)
