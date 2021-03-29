@@ -16,8 +16,8 @@ def save_app():
         image_url = ''
 
     apputility = SaveAppUtility(sandbox, resource.name, connectivity.server_address, connectivity.admin_user,
-                                connectivity.admin_pass, image_url, revertNum=1)
-    apputility.save_flow(True)
+                                connectivity.admin_pass, image_url)
+    apputility.revert_flow()
 
 
 if __name__ == "__main__":
