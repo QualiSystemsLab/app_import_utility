@@ -85,9 +85,9 @@ class SaveAppUtility:
 
         if len(command) == 1:
             if delete:
-                inputs = ['True', self.AppTemplateName, self.revertNum]
+                inputs = ['True', self.AppTemplateName, str(self.revertNum)]
             else:
-                inputs = ['False', self.AppTemplateName, self.revertNum]
+                inputs = ['False', self.AppTemplateName, str(self.revertNum)]
             self.saved_app_info = json.loads(self.sandbox.automation_api.ExecuteResourceConnectedCommand(self.sandbox.id,
                                                                                                          self.resource_name,
                                                                                                          'create_app_image',
