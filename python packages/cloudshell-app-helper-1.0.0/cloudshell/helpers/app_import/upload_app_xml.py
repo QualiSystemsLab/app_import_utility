@@ -7,7 +7,8 @@ import shutil
 from images import vm_image
 
 
-def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, server, user="admin", password="admin", display_image_result=None, display_image_name='vm.png'):
+def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, server, user="admin", password="admin",
+                             display_image_result=None, display_image_name='vm.png'):
     """
     :param CloudShellAPISession cs_api:
     :param string reservation_id:
@@ -30,14 +31,15 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
 
     # script_working_dir = os.path.dirname(os.path.abspath(__file__))
     working_dir = tempfile.mkdtemp()
-    app_template_file = "{}/{}".format(working_dir, app_name)
-    blueprint_zip_file = "{}/Blueprint.zip".format(working_dir)
-
+    app_template_file = os.path.join(working_dir, app_name)
+    blueprint_zip_file = os.path.join(working_dir, "Blueprint.zip")
     display_image_file = os.path.join(working_dir, display_image_name)
 
-    metadata_file = "{}/metadata.xml".format(working_dir)
+    metadata_file = os.path.join(working_dir, "metadata.xml")
     with open(app_template_file, "w") as app_xml:
         app_xml.write(app_xml_content)
+
+    cs_api.WriteMessageToReservationOutput(reservation_id, "package location: " + blueprint_zip_file)
 
     if os.path.exists(blueprint_zip_file):
         os.remove(blueprint_zip_file)
@@ -53,15 +55,15 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     fh.close()
 
     zip_file = zipfile.ZipFile(blueprint_zip_file, "w")
-    zip_file.write(app_template_file, arcname="App Templates\\{}.xml".format(app_name))
+    zip_file.write(app_template_file, arcname=os.path.join("App Templates", "{}.xml".format(app_name)))
 
-    zip_file.write(display_image_file, arcname="App Templates\\{}".format(display_image_name))
+    zip_file.write(display_image_file, arcname=os.path.join("App Templates", "{}".format(display_image_name)))
 
     open(metadata_file, "w").write(metadata)
     zip_file.write(metadata_file, arcname="metadata.xml")
     zip_file.close()
     zip_content = open(blueprint_zip_file, "rb").read()
-    shutil.rmtree(working_dir)
+    # shutil.rmtree(working_dir)
     authentication_code = requests.put("http://{}:9000/Api/Auth/Login".format(server),
                                        {"username": user, "password": password, "domain": "Global"}).content
 
