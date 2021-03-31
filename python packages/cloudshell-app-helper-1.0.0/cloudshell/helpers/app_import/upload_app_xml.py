@@ -39,8 +39,6 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     with open(app_template_file, "w") as app_xml:
         app_xml.write(app_xml_content)
 
-    cs_api.WriteMessageToReservationOutput(reservation_id, "package location: " + blueprint_zip_file)
-
     if os.path.exists(blueprint_zip_file):
         os.remove(blueprint_zip_file)
 
@@ -63,7 +61,7 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     zip_file.write(metadata_file, arcname="metadata.xml")
     zip_file.close()
     zip_content = open(blueprint_zip_file, "rb").read()
-    # shutil.rmtree(working_dir)
+    shutil.rmtree(working_dir)
     authentication_code = requests.put("http://{}:9000/Api/Auth/Login".format(server),
                                        {"username": user, "password": password, "domain": "Global"}).content
 
