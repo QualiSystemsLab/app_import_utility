@@ -30,5 +30,4 @@ setuptools.setup(
         "Programming Language :: Python :: 2.7",
         "License :: OSI Approved :: Apache Software License",
     ],
-    python_requires='>=2.7.0,<2.8.0',
 )
