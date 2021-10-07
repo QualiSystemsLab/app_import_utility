@@ -1,4 +1,5 @@
-cloudshell-orch-core>=1.7.0.0,<1.8.0.0
-cloudshell-automation-api>=9.3
+# cloudshell-orch-core>=1.7.0.0,<1.8.0.0
+# cloudshell-automation-api>=9.3
+# requests==2.23.0
+# why do we need to list dependencies that are included in app helper package
 cloudshell-app-helper>=2.0.0,<3.0.0
-requests==2.23.0
