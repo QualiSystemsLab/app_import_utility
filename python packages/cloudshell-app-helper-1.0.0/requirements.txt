@@ -1,3 +1,7 @@
-cloudshell-orch-core>=3.3.0.0,<3.4.0.0
+# pretty sure orch-core not needed
+# cloudshell-orch-core>=3.3.0.0,<3.4.0.0
+
+# dependency error with automation api and url-lib - removing version of requests
+# requests==2.23.0
 cloudshell-automation-api>=2020.2.0.0
-requests==2.23.0
+requests

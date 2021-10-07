@@ -4,7 +4,7 @@ import zipfile
 import requests
 import shutil
 
-from images import vm_image
+from cloudshell.helpers.app_import.images import vm_image
 
 
 def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, server, user="admin", password="admin",

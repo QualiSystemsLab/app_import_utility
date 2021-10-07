@@ -1,5 +1,5 @@
 def attribute(name, value, overwrite=False):
-    xml ="""
+    xml = """
     <Attribute Name="{Name}" Value="{Value}" {overwrite}/>
     """
     return xml.format(Name=name, Value=value, overwrite='Override="true"' if overwrite else "")
@@ -15,8 +15,9 @@ def deployment_path(deploy_path, cloud_provider):
         </DeploymentService>
         </DeploymentPath>
     """
-    return xml.format(DeployAttributes="\n".join([attribute(x, y, True) for x, y in deploy_path['attributes'].iteritems()]),
-                      cp=cloud_provider, dn=deploy_path['name'], dsn=deploy_path['service_name'])
+    return xml.format(
+        DeployAttributes="\n".join([attribute(x, y, True) for x, y in deploy_path['attributes'].items()]),
+        cp=cloud_provider, dn=deploy_path['name'], dsn=deploy_path['service_name'])
 
 
 def deployment_paths(deploy_paths, cloud_provider):
@@ -37,10 +38,11 @@ def app_resource(attributes, model, driver):
     </AppResources>
     
     """
-    return xml.format(Attributes="\n".join(attribute(x, y, True) for x, y in attributes.iteritems()), model=model, driver=driver)
+    return xml.format(Attributes="\n".join(attribute(x, y, True) for x, y in attributes.iteritems()), model=model,
+                      driver=driver)
 
 
-def app_resource_info(app_name, deploy_paths, app_attributes, model, driver, cloud_provider, image_name):
+def app_resource_info(app_name: str, deploy_paths, app_attributes, model, driver, cloud_provider, image_name):
     xml = """
   <AppResourceInfo Name="{AppName}" ImagePath="{img}">
     {AppResource}
@@ -50,7 +52,8 @@ def app_resource_info(app_name, deploy_paths, app_attributes, model, driver, clo
     </DeploymentPaths>
     </AppResourceInfo>
     """
-    return xml.format(AppName=app_name, img=image_name, AppResource=app_resource(app_attributes, model, driver), DeploymentPath=deployment_paths(deploy_paths, cloud_provider))
+    return xml.format(AppName=app_name, img=image_name, AppResource=app_resource(app_attributes, model, driver),
+                      DeploymentPath=deployment_paths(deploy_paths, cloud_provider))
 
 
 def add_category(category):
@@ -72,10 +75,9 @@ def categories_info(categories):
 
 def app_template(app_name, deploy_paths, categories, app_attributes, model, driver, cloud_provider, image_name):
     """
-
     :return:
     """
-    xml ="""<?xml version="1.0" encoding="utf-8"?>
+    xml = """<?xml version="1.0" encoding="utf-8"?>
 <AppTemplateInfo xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     {AppResourceInfo}
 
@@ -86,4 +88,3 @@ def app_template(app_name, deploy_paths, categories, app_attributes, model, driv
     categories = categories_info(categories)
 
     return xml.format(AppResourceInfo=app_resource, Categories=categories if categories else "")
-
