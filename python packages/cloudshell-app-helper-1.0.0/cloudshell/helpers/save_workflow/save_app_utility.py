@@ -7,7 +7,8 @@ from cloudshell.helpers.app_import.build_app_xml import app_template
 from cloudshell.helpers.app_import.upload_app_xml import upload_app_to_cloudshell
 
 # what I currently see in latest AWS and OCI 2G shells
-CP_CREATE_IMAGE_COMMAND = "save_app"
+CP_2G_CREATE_IMAGE_COMMAND = "save_app"
+AWS_DEPLOY_PARAM_KEY = "AWS AMI Id"
 
 
 class SaveAppUtility:
@@ -89,21 +90,21 @@ class SaveAppUtility:
 
     def save_app_info(self, delete):
         command_search = [x.Name for x in self.api.GetResourceConnectedCommands(self.resource_name).Commands
-                          if x.Name == CP_CREATE_IMAGE_COMMAND]
+                          if x.Name == CP_2G_CREATE_IMAGE_COMMAND]
 
         if not command_search:
             exc_msg = (f"Operation not supported by Cloud Provider\n"
-                       f"Command f{CP_CREATE_IMAGE_COMMAND} not found on resource {self.resource_name}")
+                       f"Command f{CP_2G_CREATE_IMAGE_COMMAND} not found on resource {self.resource_name}")
             raise Exception(exc_msg)
 
         if delete:
             inputs = ['True', self.new_app_name, str(self.revertNum)]
         else:
             inputs = ['False', self.new_app_name, str(self.revertNum)]
-        self.saved_app_info = self.api.ExecuteResourceConnectedCommand(self.reservation_id,
-                                                                       self.resource_name,
-                                                                       CP_CREATE_IMAGE_COMMAND,
-                                                                       'connectivity').Output
+        self.saved_app_info = json.loads(self.api.ExecuteResourceConnectedCommand(self.reservation_id,
+                                                                                  self.resource_name,
+                                                                                  CP_2G_CREATE_IMAGE_COMMAND,
+                                                                                  'connectivity').Output)
 
     def revert_app_info(self):
         command = [x.Name for x in self.api.GetResourceConnectedCommands(self.resource_name).Commands
@@ -129,14 +130,18 @@ class SaveAppUtility:
 
         app_categories = ['Applications']
 
-        if self.saved_app_info is not None:
+        if self.saved_app_info:
             for deploy_path in self.deploy_info['deploypaths']:
                 if not deploy_path['is_default']:
                     continue
+                service_name = deploy_path["service_name"]
                 for key, value in self.saved_app_info.items():
                     # patch for AWS
-                    if 'AWS' in key:
-                        deploy_path['attributes']['AWS AMI Id'] = value
+                    if "AWS" in key:
+                        if "2G" in service_name:
+                            deploy_path["attributes"][f"{service_name}.{AWS_DEPLOY_PARAM_KEY}"] = value
+                        else:
+                            deploy_path['attributes'][AWS_DEPLOY_PARAM_KEY] = value
                     else:
                         deploy_path['attributes'][key] = value
 
@@ -148,17 +153,14 @@ class SaveAppUtility:
         result = upload_app_to_cloudshell(self.api, self.reservation_id, self.new_app_name, self.app_xml,
                                           self.server_address, self.admin_user, self.admin_password,
                                           self.display_image_result, self.display_image_name)
-        if result is None:
-            self.api.WriteMessageToReservationOutput(self.reservation_id,
-                                                     "App '{}' has been updated from instance '{}'\n".format(
-                                                         self.new_app_name, self.resource_name))
-        else:
-            raise Exception("Error uploading App to CloudShell\n{}".format(result))
+        succes_msg = (f"App '{self.new_app_name}' has been updated from instance '{self.resource_name}'\n"
+                      f"Upload Response: {result}")
+        self.api.WriteMessageToReservationOutput(self.reservation_id, succes_msg)
 
     def save_flow(self, delete=False):
         if not self.api_missing:
             self.verify_deploy_info_and_display_image()
-            self.save_app_info(delete)
+            self.save_app_info(delete)  # what is delete for?
             self.create_app_xml()
             self.upload_app()
             if delete:

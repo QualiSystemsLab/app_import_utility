@@ -3,6 +3,7 @@ import os
 import zipfile
 import requests
 import shutil
+import base64
 
 from cloudshell.helpers.app_import.images import vm_image
 
@@ -47,9 +48,9 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
 
     fh = open(display_image_file, "wb")
     if display_image_result is not None:
-        fh.write(display_image_result.decode('base64'))
+        fh.write(base64.b64decode(display_image_result))
     else:
-        fh.write(vm_image.decode('base64'))
+        fh.write(base64.b64decode(vm_image))
     fh.close()
 
     zip_file = zipfile.ZipFile(blueprint_zip_file, "w")
@@ -62,15 +63,21 @@ def upload_app_to_cloudshell(cs_api, reservation_id, app_name, app_xml_content, 
     zip_file.close()
     zip_content = open(blueprint_zip_file, "rb").read()
     shutil.rmtree(working_dir)
-    authentication_code = requests.put("http://{}:9000/Api/Auth/Login".format(server),
-                                       {"username": user, "password": password, "domain": "Global"}).content
 
-    result = requests.post("http://{}:9000/API/Package/ImportPackage".format(server),
-                           headers={"Authorization": "Basic {}".format(authentication_code[1:-1])},
+    server_url = "http://{}:9000/Api/Auth/Login".format(server)
+
+    login_response = requests.put(server_url,
+                                  data={"username": user, "password": password, "domain": "Global"})
+    if not login_response.ok:
+        raise Exception(f"Failed login to Quali API trying to import App Package.\n"
+                        f"Status Code: {login_response.status_code}. Reason: {login_response.reason}")
+    token = login_response.text[1:-1]
+    upload_response = requests.post("http://{}:9000/API/Package/ImportPackage".format(server),
+                           headers={"Authorization": f"Basic {token}"},
                            files={"QualiPackage": zip_content})
-    if 'false' in result.content:
-        raise Exception('Issue importing App XML into Cloudshell: ' + result.content)
-    if result.status_code >= 300:
-        return result.content
-    else:
-        return None
+    if not upload_response.ok:
+        raise Exception("Failed upload of app XML into cloudshell.\n"
+                        f"Status Code: {upload_response.status_code}, Reason: {upload_response.reason}")
+    if 'false' in result.text:
+        raise Exception('Issue importing App XML into Cloudshell: ' + result.text)
+    return upload_response.text

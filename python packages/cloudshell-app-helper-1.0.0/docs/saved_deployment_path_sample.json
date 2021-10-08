@@ -1,0 +1,31 @@
+{
+    "deploypaths": [
+        {
+            "name": "AWS US-West-2 - AWS EC2 Instance",
+            "is_default": true,
+            "service_name": "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G",
+            "attributes": {
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.AWS AMI Id": "ami-0c9ff37f7a65a36a2",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Allow all Sandbox Traffic": "True",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Instance Type": "t2.large",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.IAM Role Name": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Inbound Ports": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Public IP Options": "No Public IP",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Storage Size": "0",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Storage IOPS": "0",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Storage Type": "auto",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Root Volume Name": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Autoload": "True",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Wait for IP": "False",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Wait for Status Check": "False",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Wait for Credentials": "True",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Custom Tags": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.User Data URL": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.User Data Parameters": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Private IP": "",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Enable Source Dest Check": "True",
+                "Amazon AWS Cloud Provider 2G.Amazon AWS EC2 Instance 2G.Status Check Timeout": "0"
+            }
+        }
+    ]
+}

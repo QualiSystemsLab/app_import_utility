@@ -38,7 +38,7 @@ def app_resource(attributes, model, driver):
     </AppResources>
     
     """
-    return xml.format(Attributes="\n".join(attribute(x, y, True) for x, y in attributes.iteritems()), model=model,
+    return xml.format(Attributes="\n".join(attribute(x, y, True) for x, y in attributes.items()), model=model,
                       driver=driver)
 
 
