@@ -1,6 +1,7 @@
 import os
 import json
 import requests
+from timeit import default_timer
 
 from cloudshell.api.cloudshell_api import CloudShellAPISession
 from cloudshell.helpers.app_import.build_app_xml import app_template
@@ -101,10 +102,22 @@ class SaveAppUtility:
             inputs = ['True', self.new_app_name, str(self.revertNum)]
         else:
             inputs = ['False', self.new_app_name, str(self.revertNum)]
-        self.saved_app_info = json.loads(self.api.ExecuteResourceConnectedCommand(self.reservation_id,
-                                                                                  self.resource_name,
-                                                                                  CP_2G_CREATE_IMAGE_COMMAND,
-                                                                                  'connectivity').Output)
+
+        save_msg = f"Saving new AMI on AWS for app '{self.resource_name}'. This may take a few minutes..."
+        self.api.WriteMessageToReservationOutput(self.reservation_id, save_msg)
+        start_timer = default_timer()
+        try:
+            save_response = self.api.ExecuteResourceConnectedCommand(self.reservation_id,
+                                                                     self.resource_name,
+                                                                     CP_2G_CREATE_IMAGE_COMMAND,
+                                                                     'connectivity').Output
+        except Exception as e:
+            exc_msg = f"Issue saving app {self.resource_name}. {type(e).__name__}: {str(e)}"
+            raise Exception(exc_msg)
+        total_seconds = default_timer() - start_timer
+        success_msg = f"Finished saving AMI in {total_seconds:.2f} seconds:\n{save_response}"
+        self.api.WriteMessageToReservationOutput(self.reservation_id, success_msg)
+        self.saved_app_info = json.loads(save_response)
 
     def revert_app_info(self):
         command = [x.Name for x in self.api.GetResourceConnectedCommands(self.resource_name).Commands
@@ -122,6 +135,7 @@ class SaveAppUtility:
             raise Exception("Operation not supported by Cloud Provider\n")
 
     def create_app_xml(self):
+        self.api.WriteMessageToReservationOutput(self.reservation_id, "Creating new app template...")
         resource = self.api.GetResourceDetails(self.resource_name)
 
         app_attributes = dict()
@@ -150,7 +164,8 @@ class SaveAppUtility:
                                     resource.VmDetails.CloudProviderFullName, self.display_image_name)
 
     def upload_app(self):
-        result = upload_app_to_cloudshell(self.api, self.reservation_id, self.new_app_name, self.app_xml,
+        self.api.WriteMessageToReservationOutput(self.reservation_id, "Uploading app template to Cloudshell...")
+        result = upload_app_to_cloudshell(self.new_app_name, self.app_xml,
                                           self.server_address, self.admin_user, self.admin_password,
                                           self.display_image_result, self.display_image_name)
         succes_msg = (f"App '{self.new_app_name}' has been updated from instance '{self.resource_name}'\n"
