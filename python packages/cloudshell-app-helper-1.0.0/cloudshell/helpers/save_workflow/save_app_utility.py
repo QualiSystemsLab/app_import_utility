@@ -77,6 +77,7 @@ class SaveAppUtility:
         self.display_image_result = self.api.GetReservationAppImage(self.reservation_id,
                                                                     self.resource_name).AppTemplateImage
 
+        # TODO: have option to override this always with display image
         if self.display_image_result == '':
             try:
                 if self.display_image_url != '':
@@ -168,9 +169,9 @@ class SaveAppUtility:
         result = upload_app_to_cloudshell(self.new_app_name, self.app_xml,
                                           self.server_address, self.admin_user, self.admin_password,
                                           self.display_image_result, self.display_image_name)
-        succes_msg = (f"App '{self.new_app_name}' has been updated from instance '{self.resource_name}'\n"
+        success_msg = (f"App '{self.new_app_name}' has been updated from instance '{self.resource_name}'\n"
                       f"Upload Response: {result}")
-        self.api.WriteMessageToReservationOutput(self.reservation_id, succes_msg)
+        self.api.WriteMessageToReservationOutput(self.reservation_id, success_msg)
 
     def save_flow(self, delete=False):
         if not self.api_missing:

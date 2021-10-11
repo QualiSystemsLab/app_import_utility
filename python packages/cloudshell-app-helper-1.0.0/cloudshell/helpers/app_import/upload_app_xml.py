@@ -9,7 +9,7 @@ from cloudshell.helpers.app_import.images import vm_image
 
 
 def upload_app_to_cloudshell(app_name, app_xml_content, server, user="admin", password="admin",
-                             display_image_result=None, display_image_name='vm.png'):
+                             display_image_result="", display_image_name='vm.png'):
     """
     :param CloudShellAPISession cs_api:
     :param string reservation_id:
@@ -47,7 +47,7 @@ def upload_app_to_cloudshell(app_name, app_xml_content, server, user="admin", pa
         os.remove(display_image_file)
 
     fh = open(display_image_file, "wb")
-    if display_image_result is not None:
+    if not display_image_result:
         fh.write(base64.b64decode(display_image_result))
     else:
         fh.write(base64.b64decode(vm_image))
