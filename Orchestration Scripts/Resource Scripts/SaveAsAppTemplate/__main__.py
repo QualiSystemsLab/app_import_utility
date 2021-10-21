@@ -1,28 +1,25 @@
-from cloudshell.workflow.orchestration.sandbox import Sandbox
 from cloudshell.helpers.scripts import cloudshell_scripts_helpers as helpers
 from cloudshell.helpers.save_workflow.save_app_utility import SaveAppUtility
-
 import os
+
+NEW_APP_PARAM = "NEWAPPNAME"
+IMAGE_URL_PARAM = "DISPLAYIMAGEURL"
 
 
 def save_app():
-    sandbox = Sandbox()
     connectivity = helpers.get_connectivity_context_details()
     resource = helpers.get_resource_context_details()
+    reservation_details = helpers.get_reservation_context_details()
+    sandbox_id = reservation_details.id
+    api = helpers.get_api_session()
 
-    if 'NEWAPPNAME' in os.environ:
-        new_app_name = os.environ['NEWAPPNAME']
-    else:
-        new_app_name = ''
+    new_app_name = os.environ.get(NEW_APP_PARAM, "")
+    image_url = os.environ.get(IMAGE_URL_PARAM, "")
 
-    if 'DISPLAYIMAGEURL' in os.environ:
-        image_url = os.environ['DISPLAYIMAGEURL']
-    else:
-        image_url = ''
-
-    apputility = SaveAppUtility(sandbox, resource.name, connectivity.server_address, connectivity.admin_user,
-                                connectivity.admin_pass, image_url, new_app_name, save_as=True)
-    apputility.save_flow()
+    app_utility = SaveAppUtility(api, sandbox_id, resource.name, connectivity.server_address, connectivity.admin_user,
+                                 connectivity.admin_pass, image_url, new_app_name, save_as=True)
+    saved_app_info = app_utility.save_flow()
+    print(saved_app_info)
 
 
 if __name__ == "__main__":
